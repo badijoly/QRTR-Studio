@@ -1,95 +1,136 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>QRTR Studio - Generador Personal de Códigos QR</title>
   <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
   <style>
-    /* Custom styling for sleek UI */
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
+
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      background-color: #070b14;
+      background-image: 
+        radial-gradient(at 15% 15%, rgba(16, 185, 129, 0.12) 0px, transparent 45%),
+        radial-gradient(at 85% 20%, rgba(14, 165, 233, 0.10) 0px, transparent 40%),
+        radial-gradient(at 50% 85%, rgba(99, 102, 241, 0.08) 0px, transparent 50%);
+      background-attachment: fixed;
+    }
+
+    /* Custom Color Pickers */
     input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
-    input[type="color"]::-webkit-color-swatch { border: none; border-radius: 6px; }
-    .tab-active { border-bottom: 2px solid #10b981; color: #10b981; font-weight: 600; }
-    /* Responsive scrollbar */
+    input[type="color"]::-webkit-color-swatch { border: none; border-radius: 8px; }
+
+    /* Custom Glass Scrollbars */
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 9999px; }
-    ::-webkit-scrollbar-thumb:hover { background: #475569; }
+    ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #334155; }
+
+    /* Glow utilities */
+    .glow-emerald {
+      box-shadow: 0 0 35px -5px rgba(16, 185, 129, 0.25);
+    }
+    .glow-ambient {
+      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7), 0 0 30px -10px rgba(16, 185, 129, 0.15);
+    }
+
     @media print {
       body * { visibility: hidden; }
       #printable-area, #printable-area * { visibility: visible; }
-      #printable-area { position: absolute; left: 0; top: 0; width: 100%; }
+      #printable-area { position: absolute; left: 0; top: 0; width: 100%; box-shadow: none; border: none; }
     }
   </style>
 </head>
-<body class="bg-[var(--background,#0b1120)] text-[var(--foreground,#f1f5f9)] min-h-screen antialiased flex flex-col">
+<body class="text-slate-100 min-h-screen antialiased flex flex-col selection:bg-emerald-500 selection:text-black">
 
-  <!-- Top Navigation Bar -->
-  <header class="bg-[var(--card,#131d31)] border-b border-[var(--border,#1e293b)] sticky top-0 z-30 px-4 py-3 sm:px-6">
+  <!-- Ambient Light Orbs -->
+  <div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
+    <div class="absolute -top-32 -left-32 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl"></div>
+    <div class="absolute top-1/3 -right-32 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl"></div>
+  </div>
+
+  <!-- Header Bar -->
+  <header class="relative z-20 backdrop-blur-xl bg-slate-950/70 border-b border-white/[0.08] sticky top-0 px-4 py-3.5 sm:px-8 transition-all">
     <div class="max-w-7xl mx-auto flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <img src="memoji.png" alt="Avatar" class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-500/20 to-teal-400/20 border border-emerald-500/40 p-0.5 object-cover shadow-md shadow-emerald-500/10 cursor-pointer" onclick="setMemojiLogo()" title="Tu Memoji personal">
+      
+      <!-- Brand & Memoji -->
+      <div class="flex items-center gap-3.5 group cursor-pointer" onclick="setMemojiLogo()">
+        <div class="relative">
+          <div class="absolute -inset-1 bg-gradient-to-r from-emerald-500 to-teal-400 rounded-2xl blur opacity-30 group-hover:opacity-75 transition duration-500"></div>
+          <img src="memoji.png" alt="Memoji de Rodolfo" class="relative w-11 h-11 rounded-2xl bg-slate-900 border border-white/20 p-0.5 object-cover shadow-md transition transform group-hover:scale-105">
+        </div>
         <div>
-          <h1 class="text-base font-bold text-[var(--foreground,#f1f5f9)] flex items-center gap-2 leading-tight">
-            QRTR Studio <span class="text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-semibold">Pro</span>
-          </h1>
-          <p class="text-[11px] text-[var(--muted-foreground,#94a3b8)]">Tu generador personal de códigos QR</p>
+          <div class="flex items-center gap-2">
+            <h1 class="text-lg font-black tracking-tight text-white flex items-center gap-1.5">
+              QRTR <span class="bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">Studio</span>
+            </h1>
+            <span class="text-[10px] uppercase font-bold tracking-widest px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+              Pro
+            </span>
+          </div>
+          <p class="text-[11px] text-slate-400 font-medium">Generador personal de alta definición</p>
         </div>
       </div>
 
-      <!-- Navigation Tabs -->
-      <nav class="flex items-center gap-1 bg-[var(--background,#0b1120)] p-1 rounded-xl border border-[var(--border,#1e293b)] text-xs">
-        <button id="nav-create" onclick="switchMainTab('create')" class="px-3 py-1.5 rounded-lg font-medium transition bg-emerald-500 text-black font-semibold shadow-sm">
+      <!-- Segmented Navigation Pills -->
+      <nav class="flex items-center bg-slate-900/90 p-1.5 rounded-2xl border border-white/10 shadow-inner text-xs">
+        <button id="nav-create" onclick="switchMainTab('create')" class="px-3.5 py-1.5 rounded-xl font-semibold transition-all bg-gradient-to-r from-emerald-500 to-teal-400 text-slate-950 shadow-md shadow-emerald-500/20">
           Crear QR
         </button>
-        <button id="nav-history" onclick="switchMainTab('history')" class="px-3 py-1.5 rounded-lg font-medium text-[var(--muted-foreground,#94a3b8)] hover:text-white transition">
-          Historial (<span id="history-badge">0</span>)
+        <button id="nav-history" onclick="switchMainTab('history')" class="px-3.5 py-1.5 rounded-xl font-medium text-slate-400 hover:text-white transition-all flex items-center gap-1.5">
+          <span>Colección</span>
+          <span id="history-badge" class="px-1.5 py-0.2 rounded-full bg-slate-800 text-[10px] text-slate-300 border border-white/5 font-mono">0</span>
         </button>
-        <button id="nav-scan" onclick="switchMainTab('scan')" class="px-3 py-1.5 rounded-lg font-medium text-[var(--muted-foreground,#94a3b8)] hover:text-white transition">
+        <button id="nav-scan" onclick="switchMainTab('scan')" class="px-3.5 py-1.5 rounded-xl font-medium text-slate-400 hover:text-white transition-all">
           Escanear
         </button>
       </nav>
+
     </div>
   </header>
 
-  <!-- Main Container (Responsive for Fold Cover & Fold Inner Screen) -->
-  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+  <!-- Main Workspace -->
+  <main class="relative z-10 flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
 
-    <!-- VIEW 1: CREATOR VIEW (Two-column layout on unfolded screen / large screen) -->
-    <div id="view-create" class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+    <!-- VIEW 1: CREATOR (Responsive 2-Column Layout) -->
+    <div id="view-create" class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
       
-      <!-- Left Column (Inputs & Customization) -->
-      <div class="lg:col-span-7 space-y-5">
+      <!-- Left Controls (col-span-7) -->
+      <div class="lg:col-span-7 space-y-6">
 
-        <!-- Card: Content Input -->
-        <div class="bg-[var(--card,#131d31)] border border-[var(--border,#1e293b)] rounded-2xl p-5 shadow-lg space-y-4">
-          <div class="flex items-center justify-between">
-            <h2 class="text-sm font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-2">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
-              1. Enlace o Contenido
+        <!-- Card 1: Content Input -->
+        <div class="backdrop-blur-xl bg-slate-900/60 border border-white/10 rounded-3xl p-6 shadow-2xl space-y-5">
+          <div class="flex items-center justify-between border-b border-white/[0.06] pb-3.5">
+            <h2 class="text-xs font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              1. Enlace de Destino
             </h2>
-            <button onclick="pasteFromClipboard()" class="text-xs text-emerald-400 hover:text-emerald-300 flex items-center gap-1 font-medium">
+            <button onclick="pasteFromClipboard()" class="text-xs text-emerald-400 hover:text-emerald-300 flex items-center gap-1.5 font-semibold transition px-2.5 py-1 rounded-lg hover:bg-emerald-500/10">
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
               Pegar enlace
             </button>
           </div>
 
           <div>
-            <label class="block text-xs text-[var(--muted-foreground,#94a3b8)] mb-1">URL / Link de interés *</label>
-            <input id="input-url" type="url" placeholder="https://ejemplo.com/evento-o-documento" 
-              class="w-full bg-[var(--background,#0b1120)] border border-[var(--border,#334155)] focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-slate-500 outline-none transition"
-              oninput="debounceUpdateQR()" value="https://antigravity.google">
+            <label class="block text-xs font-medium text-slate-400 mb-1.5">URL o contenido del código</label>
+            <div class="relative">
+              <input id="input-url" type="url" placeholder="https://tu-sitio.com/evento-o-documento" 
+                class="w-full bg-slate-950/80 border border-white/10 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 rounded-2xl px-4 py-3.5 text-sm text-white placeholder-slate-500 outline-none transition font-mono"
+                oninput="debounceUpdateQR()" value="https://antigravity.google">
+            </div>
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label class="block text-xs text-[var(--muted-foreground,#94a3b8)] mb-1">Título / Nombre del enlace</label>
-              <input id="input-title" type="text" placeholder="Ej. Menú del Evento / Dossier" 
-                class="w-full bg-[var(--background,#0b1120)] border border-[var(--border,#334155)] focus:border-emerald-500 rounded-xl px-3.5 py-2 text-sm text-white placeholder-slate-500 outline-none transition">
+              <label class="block text-xs font-medium text-slate-400 mb-1.5">Título identificador</label>
+              <input id="input-title" type="text" placeholder="Ej. Acreditación Evento 2026" 
+                class="w-full bg-slate-950/80 border border-white/10 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 rounded-2xl px-4 py-2.5 text-sm text-white placeholder-slate-500 outline-none transition">
             </div>
             <div>
-              <label class="block text-xs text-[var(--muted-foreground,#94a3b8)] mb-1">Categoría</label>
-              <select id="input-category" class="w-full bg-[var(--background,#0b1120)] border border-[var(--border,#334155)] focus:border-emerald-500 rounded-xl px-3.5 py-2 text-sm text-white outline-none transition">
+              <label class="block text-xs font-medium text-slate-400 mb-1.5">Categoría</label>
+              <select id="input-category" class="w-full bg-slate-950/80 border border-white/10 focus:border-emerald-500 rounded-2xl px-4 py-2.5 text-sm text-white outline-none transition">
                 <option value="Trabajo">💼 Trabajo / Negocios</option>
                 <option value="Evento">🎪 Evento / Producción</option>
                 <option value="Personal">👤 Personal</option>
@@ -101,156 +142,211 @@
           </div>
 
           <div>
-            <label class="block text-xs text-[var(--muted-foreground,#94a3b8)] mb-1">Notas adicionales (opcional)</label>
+            <label class="block text-xs font-medium text-slate-400 mb-1.5">Notas rápidas</label>
             <textarea id="input-notes" rows="2" placeholder="Agrega recordatorios o detalles sobre este enlace..." 
-              class="w-full bg-[var(--background,#0b1120)] border border-[var(--border,#334155)] focus:border-emerald-500 rounded-xl px-3.5 py-2 text-xs text-white placeholder-slate-500 outline-none transition"></textarea>
+              class="w-full bg-slate-950/80 border border-white/10 focus:border-emerald-500 rounded-2xl px-4 py-2.5 text-xs text-white placeholder-slate-500 outline-none transition"></textarea>
           </div>
         </div>
 
-        <!-- Card: Customization & Logo Integration -->
-        <div class="bg-[var(--card,#131d31)] border border-[var(--border,#1e293b)] rounded-2xl p-5 shadow-lg space-y-4">
-          <div class="flex items-center justify-between">
-            <h2 class="text-sm font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-2">
+        <!-- Card 2: Customization & Aesthetic Studio -->
+        <div class="backdrop-blur-xl bg-slate-900/60 border border-white/10 rounded-3xl p-6 shadow-2xl space-y-6">
+          <div class="flex items-center justify-between border-b border-white/[0.06] pb-3.5">
+            <h2 class="text-xs font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-2">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path></svg>
-              2. Personalización y Logotipo Central
+              2. Estudio de Diseño del QR
             </h2>
-            <span class="text-[11px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono">Nivel H (30% Redundancia)</span>
+            <span class="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+              Reed-Solomon Grado H
+            </span>
           </div>
 
-          <!-- Color Customizer -->
-          <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-1">
-            <div>
-              <label class="block text-xs text-[var(--muted-foreground,#94a3b8)] mb-1">Color del QR</label>
-              <div class="flex items-center gap-2 bg-[var(--background,#0b1120)] p-1.5 rounded-xl border border-[var(--border,#334155)]">
-                <input id="color-fg" type="color" value="#0f172a" onchange="updateQR()" class="w-7 h-7 cursor-pointer rounded-lg bg-transparent">
-                <span id="label-fg" class="text-xs font-mono">#0F172A</span>
-              </div>
-            </div>
-            <div>
-              <label class="block text-xs text-[var(--muted-foreground,#94a3b8)] mb-1">Color de Fondo</label>
-              <div class="flex items-center gap-2 bg-[var(--background,#0b1120)] p-1.5 rounded-xl border border-[var(--border,#334155)]">
-                <input id="color-bg" type="color" value="#ffffff" onchange="updateQR()" class="w-7 h-7 cursor-pointer rounded-lg bg-transparent">
-                <span id="label-bg" class="text-xs font-mono">#FFFFFF</span>
-              </div>
-            </div>
-            <div class="col-span-2 sm:col-span-1">
-              <label class="block text-xs text-[var(--muted-foreground,#94a3b8)] mb-1">Estilo Rápido</label>
-              <div class="flex items-center gap-1.5 pt-1">
-                <button onclick="setTheme('#0f172a', '#ffffff')" class="w-6 h-6 rounded-full border border-slate-400 bg-white shadow-sm" title="Clásico"></button>
-                <button onclick="setTheme('#047857', '#ffffff')" class="w-6 h-6 rounded-full border border-slate-600 bg-emerald-700 shadow-sm" title="Esmeralda"></button>
-                <button onclick="setTheme('#1e3a8a', '#ffffff')" class="w-6 h-6 rounded-full border border-slate-600 bg-blue-900 shadow-sm" title="Azul Corporativo"></button>
-                <button onclick="setTheme('#581c87', '#ffffff')" class="w-6 h-6 rounded-full border border-slate-600 bg-purple-900 shadow-sm" title="Púrpura"></button>
-                <button onclick="setTheme('#ffffff', '#0f172a')" class="w-6 h-6 rounded-full border border-slate-400 bg-slate-900 shadow-sm" title="Modo Oscuro Invertido"></button>
-              </div>
+          <!-- Module Shapes -->
+          <div>
+            <label class="block text-xs font-medium text-slate-400 mb-2">Forma de los Módulos</label>
+            <div class="grid grid-cols-3 gap-2.5">
+              <button onclick="setModuleStyle('square')" id="btn-style-square" class="py-2.5 px-3 rounded-2xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 text-xs font-semibold flex items-center justify-center gap-2 transition">
+                <span class="w-3.5 h-3.5 bg-current"></span>
+                <span>Clásico</span>
+              </button>
+              <button onclick="setModuleStyle('rounded')" id="btn-style-rounded" class="py-2.5 px-3 rounded-2xl bg-slate-950/80 border border-white/10 hover:border-white/20 text-slate-300 text-xs font-semibold flex items-center justify-center gap-2 transition">
+                <span class="w-3.5 h-3.5 bg-current rounded-sm"></span>
+                <span>Suave</span>
+              </button>
+              <button onclick="setModuleStyle('dots')" id="btn-style-dots" class="py-2.5 px-3 rounded-2xl bg-slate-950/80 border border-white/10 hover:border-white/20 text-slate-300 text-xs font-semibold flex items-center justify-center gap-2 transition">
+                <span class="w-3.5 h-3.5 bg-current rounded-full"></span>
+                <span>Puntos</span>
+              </button>
             </div>
           </div>
 
-          <!-- Logo Upload Section -->
-          <div class="pt-2 border-t border-[var(--border,#1e293b)] space-y-3">
+          <!-- Color Styles & Gradient Presets -->
+          <div class="space-y-3">
             <div class="flex items-center justify-between">
-              <div>
-                <span class="text-xs font-semibold text-white">Logotipo en el Centro</span>
-                <p class="text-[11px] text-[var(--muted-foreground,#94a3b8)]">Aislado con zona de seguridad para 100% legibilidad.</p>
+              <label class="text-xs font-medium text-slate-400">Paletas de Color Vibrantes</label>
+              <div class="flex items-center gap-1.5">
+                <input type="checkbox" id="check-gradient" onchange="toggleGradientMode(this.checked)" class="accent-emerald-500 rounded cursor-pointer">
+                <label for="check-gradient" class="text-xs text-slate-300 cursor-pointer">Modo Degradado</label>
               </div>
-              <button id="btn-remove-logo" onclick="removeLogo()" class="text-xs text-rose-400 hover:text-rose-300 hidden">
-                Quitar logo
+            </div>
+
+            <!-- Gradient Presets -->
+            <div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
+              <button onclick="applyPalette('#0f172a', '#ffffff', '#0f172a')" class="p-2 rounded-xl bg-slate-950 border border-white/10 hover:border-emerald-400 transition flex items-center gap-2 text-left">
+                <div class="w-5 h-5 rounded-lg bg-black border border-white/20 flex-shrink-0"></div>
+                <span class="text-[11px] font-medium text-slate-300">Obsidiana</span>
+              </button>
+              <button onclick="applyPalette('#047857', '#ffffff', '#06b6d4')" class="p-2 rounded-xl bg-slate-950 border border-white/10 hover:border-emerald-400 transition flex items-center gap-2 text-left">
+                <div class="w-5 h-5 rounded-lg bg-gradient-to-br from-emerald-600 to-teal-400 flex-shrink-0"></div>
+                <span class="text-[11px] font-medium text-slate-300">Esmeralda</span>
+              </button>
+              <button onclick="applyPalette('#1e3a8a', '#ffffff', '#3b82f6')" class="p-2 rounded-xl bg-slate-950 border border-white/10 hover:border-emerald-400 transition flex items-center gap-2 text-left">
+                <div class="w-5 h-5 rounded-lg bg-gradient-to-br from-blue-900 to-blue-500 flex-shrink-0"></div>
+                <span class="text-[11px] font-medium text-slate-300">Zafiro</span>
+              </button>
+              <button onclick="applyPalette('#581c87', '#ffffff', '#d946ef')" class="p-2 rounded-xl bg-slate-950 border border-white/10 hover:border-emerald-400 transition flex items-center gap-2 text-left">
+                <div class="w-5 h-5 rounded-lg bg-gradient-to-br from-purple-900 to-fuchsia-500 flex-shrink-0"></div>
+                <span class="text-[11px] font-medium text-slate-300">Neón</span>
+              </button>
+              <button onclick="applyPalette('#9a3412', '#ffffff', '#f59e0b')" class="p-2 rounded-xl bg-slate-950 border border-white/10 hover:border-emerald-400 transition flex items-center gap-2 text-left">
+                <div class="w-5 h-5 rounded-lg bg-gradient-to-br from-amber-700 to-orange-400 flex-shrink-0"></div>
+                <span class="text-[11px] font-medium text-slate-300">Ámbar</span>
               </button>
             </div>
 
-            <!-- Upload input and presets -->
-            <div class="flex flex-col sm:flex-row items-center gap-3">
-              <label class="w-full sm:w-auto flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-dashed border-emerald-500/50 hover:border-emerald-400 bg-emerald-500/5 hover:bg-emerald-500/10 cursor-pointer text-xs font-medium text-emerald-300 transition">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                <span>Subir imagen de tu logo</span>
+            <!-- Custom Pickers -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-2">
+              <div>
+                <label class="block text-[11px] text-slate-400 mb-1">Color Principal</label>
+                <div class="flex items-center gap-2 bg-slate-950 p-2 rounded-xl border border-white/10">
+                  <input id="color-fg" type="color" value="#0f172a" onchange="updateQR()" class="w-7 h-7 cursor-pointer rounded-lg bg-transparent">
+                  <span id="label-fg" class="text-xs font-mono">#0F172A</span>
+                </div>
+              </div>
+              <div id="grad-color-box" class="hidden">
+                <label class="block text-[11px] text-slate-400 mb-1">Color Secundario (Fin)</label>
+                <div class="flex items-center gap-2 bg-slate-950 p-2 rounded-xl border border-white/10">
+                  <input id="color-fg2" type="color" value="#06b6d4" onchange="updateQR()" class="w-7 h-7 cursor-pointer rounded-lg bg-transparent">
+                  <span id="label-fg2" class="text-xs font-mono">#06B6D4</span>
+                </div>
+              </div>
+              <div>
+                <label class="block text-[11px] text-slate-400 mb-1">Color de Fondo</label>
+                <div class="flex items-center gap-2 bg-slate-950 p-2 rounded-xl border border-white/10">
+                  <input id="color-bg" type="color" value="#ffffff" onchange="updateQR()" class="w-7 h-7 cursor-pointer rounded-lg bg-transparent">
+                  <span id="label-bg" class="text-xs font-mono">#FFFFFF</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Logo & Memoji Selection -->
+          <div class="pt-3 border-t border-white/[0.06] space-y-3">
+            <div class="flex items-center justify-between">
+              <div>
+                <span class="text-xs font-semibold text-white">Logotipo en el Centro</span>
+                <p class="text-[11px] text-slate-400">Protección perimetral automática para 100% legibilidad.</p>
+              </div>
+              <button id="btn-remove-logo" onclick="removeLogo()" class="text-xs text-rose-400 hover:text-rose-300 font-medium hidden">
+                ✕ Quitar logo
+              </button>
+            </div>
+
+            <div class="flex items-center gap-3 flex-wrap">
+              <!-- Memoji Button (Featured) -->
+              <button onclick="setMemojiLogo()" class="px-3 py-2 rounded-2xl bg-gradient-to-r from-emerald-500/20 to-teal-500/20 border border-emerald-500/40 hover:border-emerald-400 text-xs font-semibold text-emerald-300 flex items-center gap-2 shadow-sm transition transform hover:scale-[1.02]">
+                <img src="memoji.png" class="w-6 h-6 rounded-full object-cover border border-emerald-400/50">
+                <span>Usar Mi Memoji</span>
+              </button>
+
+              <!-- Upload custom file -->
+              <label class="flex items-center gap-2 px-3.5 py-2 rounded-2xl border border-dashed border-white/20 hover:border-emerald-400 bg-white/[0.02] hover:bg-white/[0.05] cursor-pointer text-xs font-medium text-slate-300 transition">
+                <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                <span>Subir archivo</span>
                 <input id="input-logo-file" type="file" accept="image/*" class="hidden" onchange="handleLogoUpload(event)">
               </label>
 
-              <!-- Quick Presets -->
-              <div class="flex items-center gap-1.5 flex-wrap">
-                <button onclick="setMemojiLogo()" class="px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500/20 to-teal-500/20 border border-emerald-500/40 hover:border-emerald-400 text-xs font-semibold text-emerald-300 flex items-center gap-1.5 shadow-sm transition">
-                  <img src="memoji.png" class="w-5 h-5 rounded-full object-cover">
-                  <span>Mi Memoji</span>
-                </button>
-                <span class="text-[11px] text-[var(--muted-foreground,#94a3b8)]">o iconos:</span>
-                <button onclick="setSampleLogo('link')" class="p-1.5 rounded-lg bg-[var(--background,#0b1120)] border border-[var(--border,#334155)] hover:border-emerald-400 text-xs text-white" title="Icono Link">🔗</button>
-                <button onclick="setSampleLogo('star')" class="p-1.5 rounded-lg bg-[var(--background,#0b1120)] border border-[var(--border,#334155)] hover:border-emerald-400 text-xs text-white" title="Estrella">⭐</button>
-                <button onclick="setSampleLogo('shield')" class="p-1.5 rounded-lg bg-[var(--background,#0b1120)] border border-[var(--border,#334155)] hover:border-emerald-400 text-xs text-white" title="Escudo">🛡️</button>
-                <button onclick="setSampleLogo('check')" class="p-1.5 rounded-lg bg-[var(--background,#0b1120)] border border-[var(--border,#334155)] hover:border-emerald-400 text-xs text-white" title="Check">✅</button>
+              <!-- Symbols -->
+              <div class="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-white/10">
+                <button onclick="setSampleLogo('link')" class="p-1.5 rounded-lg hover:bg-white/10 text-xs" title="Enlace">🔗</button>
+                <button onclick="setSampleLogo('star')" class="p-1.5 rounded-lg hover:bg-white/10 text-xs" title="Estrella">⭐</button>
+                <button onclick="setSampleLogo('shield')" class="p-1.5 rounded-lg hover:bg-white/10 text-xs" title="Seguridad">🛡️</button>
+                <button onclick="setSampleLogo('check')" class="p-1.5 rounded-lg hover:bg-white/10 text-xs" title="Verificado">✅</button>
               </div>
             </div>
 
-            <!-- Logo Adjusters (Visible only when logo active) -->
-            <div id="logo-adjusters" class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 hidden">
+            <!-- Logo Adjusters -->
+            <div id="logo-adjusters" class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 hidden">
               <div>
-                <div class="flex justify-between text-xs text-[var(--muted-foreground,#94a3b8)] mb-1">
-                  <span>Tamaño del logo</span>
-                  <span id="logo-size-val">22%</span>
+                <div class="flex justify-between text-xs text-slate-400 mb-1">
+                  <span>Escala del logo</span>
+                  <span id="logo-size-val" class="font-mono text-emerald-400">22%</span>
                 </div>
                 <input id="slider-logo-size" type="range" min="15" max="24" value="22" oninput="updateLogoSize(this.value)" class="w-full accent-emerald-500">
               </div>
               <div>
-                <label class="block text-xs text-[var(--muted-foreground,#94a3b8)] mb-1">Fondo del Logo</label>
-                <select id="select-logo-badge" onchange="updateQR()" class="w-full bg-[var(--background,#0b1120)] border border-[var(--border,#334155)] rounded-xl px-2.5 py-1 text-xs text-white outline-none">
+                <label class="block text-xs text-slate-400 mb-1">Aureola protectora</label>
+                <select id="select-logo-badge" onchange="updateQR()" class="w-full bg-slate-950 border border-white/10 rounded-xl px-3 py-1.5 text-xs text-white outline-none">
                   <option value="circle">Círculo protector blanco</option>
-                  <option value="rounded">Cuadrado redondeado blanco</option>
+                  <option value="rounded">Cuadrado con esquinas suaves</option>
                   <option value="none">Sin fondo protector</option>
                 </select>
               </div>
             </div>
 
           </div>
+
         </div>
 
       </div>
 
-      <!-- Right Column (Live Preview, Actions & Save) -->
-      <div class="lg:col-span-5 space-y-5 lg:sticky lg:top-20">
+      <!-- Right Column: Canvas Showcase (col-span-5) -->
+      <div class="lg:col-span-5 space-y-6 lg:sticky lg:top-24">
 
-        <!-- Live QR Preview Card -->
-        <div class="bg-[var(--card,#131d31)] border border-[var(--border,#1e293b)] rounded-2xl p-6 shadow-xl flex flex-col items-center text-center space-y-4">
-          <div class="w-full flex items-center justify-between text-xs text-[var(--muted-foreground,#94a3b8)]">
-            <span class="font-semibold text-white">Vista Previa en Vivo</span>
-            <span id="preview-dimensions" class="font-mono">1024 × 1024 px</span>
+        <!-- Showcase Card with Ambient Glow -->
+        <div class="relative backdrop-blur-2xl bg-slate-900/70 border border-white/10 rounded-3xl p-6 sm:p-7 shadow-2xl flex flex-col items-center text-center space-y-5 glow-ambient">
+          
+          <div class="w-full flex items-center justify-between text-xs text-slate-400">
+            <span class="font-semibold text-slate-200 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+              Escenario en Vivo
+            </span>
+            <span class="font-mono text-[11px] px-2 py-0.5 rounded-full bg-slate-800 border border-white/5">1024 × 1024 HD</span>
           </div>
 
-          <!-- QR Canvas Container -->
-          <div id="printable-area" class="p-4 bg-white rounded-2xl shadow-inner border border-slate-200 transition-all transform hover:scale-[1.01]">
+          <!-- Canvas Stage -->
+          <div id="printable-area" class="p-4 sm:p-5 bg-white rounded-3xl shadow-2xl border border-slate-200/80 transition-all duration-300 transform hover:scale-[1.02]">
             <canvas id="qr-canvas" class="w-64 h-64 sm:w-72 sm:h-72 block mx-auto"></canvas>
-            <div id="print-label" class="mt-2 text-center text-slate-800 font-bold text-xs hidden">
-              <div id="print-title">Título del Enlace</div>
+            <div id="print-label" class="mt-3 text-center text-slate-800 font-bold text-xs hidden">
+              <div id="print-title" class="text-sm">QRTR Studio</div>
               <div id="print-url" class="text-[10px] text-slate-500 font-normal truncate max-w-xs mx-auto"></div>
+              <div class="text-[9px] text-slate-400 mt-1">Creado por Rodolfo.tapia@verdical.cl</div>
             </div>
           </div>
 
-          <div class="text-xs text-[var(--muted-foreground,#94a3b8)] flex items-center justify-center gap-1.5">
-            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span>Listo para escanear con cualquier celular</span>
-          </div>
+          <p class="text-xs text-slate-400 flex items-center gap-1">
+            <span>Optimizado para lectura instantánea en cualquier smartphone</span>
+          </p>
 
-          <!-- Primary Actions (Save & Share) -->
-          <div class="w-full space-y-2 pt-2">
-            <button onclick="saveToHistory()" class="w-full py-3 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 active:bg-emerald-600 text-black font-bold text-sm shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2 transition">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
-              <span>Guardar en mi Colección</span>
+          <!-- Primary Save Action -->
+          <button onclick="saveToHistory()" class="w-full py-3.5 px-5 rounded-2xl bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-400 hover:from-emerald-400 hover:to-cyan-300 active:scale-[0.99] text-slate-950 font-black text-sm shadow-xl shadow-emerald-500/20 flex items-center justify-center gap-2 transition duration-300">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+            <span>Guardar en mi Colección</span>
+          </button>
+
+          <!-- Export Grid -->
+          <div class="grid grid-cols-3 gap-2.5 w-full">
+            <button onclick="downloadPNG()" class="py-2.5 px-3 rounded-2xl bg-slate-950 hover:bg-slate-800 text-white text-xs font-semibold border border-white/10 hover:border-emerald-500/40 flex items-center justify-center gap-1.5 transition" title="Descargar archivo PNG">
+              <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+              <span>PNG HD</span>
             </button>
-
-            <!-- Export Buttons Grid -->
-            <div class="grid grid-cols-3 gap-2">
-              <button onclick="downloadPNG()" class="py-2.5 px-3 rounded-xl bg-[var(--background,#0b1120)] hover:bg-[var(--border,#1e293b)] text-white text-xs font-semibold border border-[var(--border,#334155)] flex items-center justify-center gap-1.5 transition" title="Descargar en alta resolución">
-                <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                <span>PNG HD</span>
-              </button>
-
-              <button onclick="shareQR()" class="py-2.5 px-3 rounded-xl bg-[var(--background,#0b1120)] hover:bg-[var(--border,#1e293b)] text-white text-xs font-semibold border border-[var(--border,#334155)] flex items-center justify-center gap-1.5 transition" title="Compartir a WhatsApp / Quick Share">
-                <svg class="w-3.5 h-3.5 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
-                <span>Compartir</span>
-              </button>
-
-              <button onclick="printCard()" class="py-2.5 px-3 rounded-xl bg-[var(--background,#0b1120)] hover:bg-[var(--border,#1e293b)] text-white text-xs font-semibold border border-[var(--border,#334155)] flex items-center justify-center gap-1.5 transition" title="Imprimir tarjeta o etiqueta">
-                <svg class="w-3.5 h-3.5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-                <span>Imprimir</span>
-              </button>
-            </div>
+            <button onclick="shareQR()" class="py-2.5 px-3 rounded-2xl bg-slate-950 hover:bg-slate-800 text-white text-xs font-semibold border border-white/10 hover:border-teal-500/40 flex items-center justify-center gap-1.5 transition" title="Compartir directo">
+              <svg class="w-3.5 h-3.5 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
+              <span>Compartir</span>
+            </button>
+            <button onclick="printCard()" class="py-2.5 px-3 rounded-2xl bg-slate-950 hover:bg-slate-800 text-white text-xs font-semibold border border-white/10 hover:border-cyan-500/40 flex items-center justify-center gap-1.5 transition" title="Imprimir tarjeta">
+              <svg class="w-3.5 h-3.5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+              <span>Imprimir</span>
+            </button>
           </div>
 
         </div>
@@ -259,17 +355,17 @@
 
     </div>
 
-    <!-- VIEW 2: HISTORY & COLLECTIONS VIEW (Initially hidden) -->
-    <div id="view-history" class="space-y-5 hidden">
-      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-[var(--card,#131d31)] p-4 rounded-2xl border border-[var(--border,#1e293b)]">
+    <!-- VIEW 2: HISTORY (Collection) -->
+    <div id="view-history" class="space-y-6 hidden">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 backdrop-blur-xl bg-slate-900/60 p-5 rounded-3xl border border-white/10 shadow-xl">
         <div>
-          <h2 class="text-base font-bold text-white">Mis Códigos Guardados</h2>
-          <p class="text-xs text-[var(--muted-foreground,#94a3b8)]">Historial local persistente de tus enlaces y QRs personalizados.</p>
+          <h2 class="text-base font-bold text-white">Mi Colección de Códigos QR</h2>
+          <p class="text-xs text-slate-400">Historial local seguro guardado en tu navegador.</p>
         </div>
-        <div class="flex items-center gap-2 w-full sm:w-auto">
-          <input id="history-search" type="text" placeholder="Buscar por título o link..." oninput="renderHistory()" 
-            class="flex-1 sm:w-60 bg-[var(--background,#0b1120)] border border-[var(--border,#334155)] rounded-xl px-3 py-1.5 text-xs text-white outline-none">
-          <select id="history-filter-cat" onchange="renderHistory()" class="bg-[var(--background,#0b1120)] border border-[var(--border,#334155)] rounded-xl px-2.5 py-1.5 text-xs text-white outline-none">
+        <div class="flex items-center gap-2.5 w-full sm:w-auto">
+          <input id="history-search" type="text" placeholder="Buscar por nombre o enlace..." oninput="renderHistory()" 
+            class="flex-1 sm:w-64 bg-slate-950 border border-white/10 focus:border-emerald-500 rounded-2xl px-4 py-2 text-xs text-white outline-none">
+          <select id="history-filter-cat" onchange="renderHistory()" class="bg-slate-950 border border-white/10 focus:border-emerald-500 rounded-2xl px-3 py-2 text-xs text-white outline-none">
             <option value="ALL">Todas las categorías</option>
             <option value="Trabajo">💼 Trabajo</option>
             <option value="Evento">🎪 Evento</option>
@@ -281,65 +377,59 @@
         </div>
       </div>
 
-      <!-- History Cards Grid -->
-      <div id="history-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        <!-- Rendered dynamically -->
-      </div>
+      <div id="history-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
 
       <!-- Empty state -->
-      <div id="history-empty" class="text-center py-16 bg-[var(--card,#131d31)]/50 rounded-2xl border border-[var(--border,#1e293b)] space-y-3 hidden">
-        <div class="text-4xl">📂</div>
-        <h3 class="text-sm font-semibold text-white">Aún no tienes códigos guardados</h3>
-        <p class="text-xs text-[var(--muted-foreground,#94a3b8)] max-w-sm mx-auto">Crea un código QR en la pestaña "Crear QR" y pulsa "Guardar en mi Colección" para archivarlo aquí.</p>
-        <button onclick="switchMainTab('create')" class="px-4 py-2 bg-emerald-500 text-black font-bold text-xs rounded-xl shadow">
-          Crear mi primer QR
+      <div id="history-empty" class="text-center py-20 backdrop-blur-xl bg-slate-900/40 rounded-3xl border border-white/10 space-y-4 hidden">
+        <div class="text-5xl">✨</div>
+        <h3 class="text-base font-bold text-white">Aún no has guardado códigos</h3>
+        <p class="text-xs text-slate-400 max-w-sm mx-auto">Genera un código QR y pulsa "Guardar en mi Colección" para archivarlo con todas sus preferencias.</p>
+        <button onclick="switchMainTab('create')" class="px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-400 text-slate-950 font-bold text-xs rounded-2xl shadow-lg">
+          Crear mi primer código
         </button>
       </div>
     </div>
 
-    <!-- VIEW 3: SCANNER VIEW (Camera & File upload) -->
-    <div id="view-scan" class="max-w-xl mx-auto space-y-5 hidden">
-      <div class="bg-[var(--card,#131d31)] border border-[var(--border,#1e293b)] rounded-2xl p-6 shadow-xl space-y-4 text-center">
+    <!-- VIEW 3: SCANNER -->
+    <div id="view-scan" class="max-w-xl mx-auto space-y-6 hidden">
+      <div class="backdrop-blur-xl bg-slate-900/70 border border-white/10 rounded-3xl p-7 shadow-2xl space-y-5 text-center">
         <h2 class="text-base font-bold text-white flex items-center justify-center gap-2">
           <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path></svg>
-          Escanear Código QR
+          Lector Óptico de Códigos QR
         </h2>
-        <p class="text-xs text-[var(--muted-foreground,#94a3b8)]">Apunta tu cámara hacia cualquier QR o sube una captura desde tu galería.</p>
+        <p class="text-xs text-slate-400">Escanea con tu cámara en vivo o sube una captura desde tu dispositivo.</p>
 
-        <!-- Video Camera Viewport -->
-        <div class="relative w-full max-w-sm mx-auto aspect-square bg-black rounded-2xl overflow-hidden border-2 border-emerald-500/40 shadow-inner flex items-center justify-center">
+        <div class="relative w-full max-w-sm mx-auto aspect-square bg-slate-950 rounded-3xl overflow-hidden border-2 border-emerald-500/30 shadow-inner flex items-center justify-center">
           <video id="scan-video" class="w-full h-full object-cover hidden" playsinline></video>
           <div id="scan-placeholder" class="space-y-3 p-6 text-center">
             <div class="text-4xl">📷</div>
             <p class="text-xs text-slate-400">Pulsa iniciar para activar la cámara</p>
-            <button onclick="startCameraScanner()" class="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-xs shadow transition">
-              Iniciar Cámara
+            <button onclick="startCameraScanner()" class="px-4 py-2 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-400 text-slate-950 font-bold text-xs shadow-md">
+              Activar Cámara
             </button>
           </div>
-          <button id="btn-stop-camera" onclick="stopCameraScanner()" class="absolute top-2 right-2 px-2 py-1 bg-black/70 hover:bg-black text-rose-300 rounded-lg text-xs hidden">
+          <button id="btn-stop-camera" onclick="stopCameraScanner()" class="absolute top-3 right-3 px-2.5 py-1.5 bg-black/80 hover:bg-black text-rose-300 rounded-xl text-xs font-semibold border border-white/10 hidden">
             Detener
           </button>
         </div>
 
-        <!-- Or Upload Image -->
-        <div class="pt-2">
-          <label class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--background,#0b1120)] hover:bg-[var(--border,#1e293b)] text-xs text-white border border-[var(--border,#334155)] cursor-pointer transition">
+        <div>
+          <label class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-slate-950 hover:bg-slate-800 text-xs text-slate-200 border border-white/10 cursor-pointer transition">
             <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-            <span>Subir imagen con QR desde Galería</span>
+            <span>Subir imagen desde galería</span>
             <input type="file" accept="image/*" class="hidden" onchange="scanImageFile(event)">
           </label>
         </div>
 
-        <!-- Scan Result Box -->
-        <div id="scan-result-card" class="hidden bg-emerald-950/30 border border-emerald-500/40 rounded-xl p-4 text-left space-y-2">
-          <div class="text-xs font-semibold text-emerald-300">¡Código QR Detectado!</div>
-          <div id="scan-result-text" class="font-mono text-xs text-white break-all bg-black/40 p-2.5 rounded-lg border border-emerald-500/20"></div>
+        <div id="scan-result-card" class="hidden bg-emerald-950/40 border border-emerald-500/40 rounded-2xl p-4 text-left space-y-2.5">
+          <div class="text-xs font-bold text-emerald-300">¡Contenido detectado!</div>
+          <div id="scan-result-text" class="font-mono text-xs text-white break-all bg-black/60 p-3 rounded-xl border border-white/5"></div>
           <div class="flex items-center gap-2 pt-1">
-            <a id="scan-result-link" href="#" target="_blank" class="px-3 py-1.5 bg-emerald-500 text-black font-bold text-xs rounded-lg shadow">
+            <a id="scan-result-link" href="#" target="_blank" class="px-3.5 py-1.5 bg-emerald-500 text-slate-950 font-bold text-xs rounded-xl shadow">
               Abrir Enlace ↗
             </a>
-            <button onclick="loadScanToCreator()" class="px-3 py-1.5 bg-[var(--background,#0b1120)] text-white text-xs rounded-lg border border-[var(--border,#334155)]">
-              Copiar al Generador
+            <button onclick="loadScanToCreator()" class="px-3.5 py-1.5 bg-slate-850 text-white text-xs rounded-xl border border-white/10">
+              Copiar al Editor
             </button>
           </div>
         </div>
@@ -349,25 +439,22 @@
 
   </main>
 
-  <!-- PWA & Mobile Installation Bar (Footer) -->
-  <footer class="bg-[var(--card,#131d31)] border-t border-[var(--border,#1e293b)] py-4 px-4 text-center text-xs text-[var(--muted-foreground,#94a3b8)]">
-    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+  <!-- Polished Footer -->
+  <footer class="relative z-10 backdrop-blur-xl bg-slate-950/80 border-t border-white/[0.08] py-4 px-4 text-center text-xs text-slate-400">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
       <div class="flex items-center gap-2">
-        <span class="font-medium text-slate-300">QRTR Studio</span>
-        <span>•</span>
+        <span class="font-bold text-white tracking-wide">QRTR Studio</span>
+        <span class="text-slate-600">•</span>
         <span class="text-emerald-400 font-semibold">Creado por Rodolfo.tapia@verdical.cl</span>
       </div>
-      <div class="flex items-center gap-3 text-[11px]">
-        <span>📱 En móviles: Menú del navegador ➔ <b>"Agregar a pantalla de inicio"</b> para usar como App</span>
+      <div class="flex items-center gap-2 text-[11px] text-slate-400">
+        <span>📱 En smartphones: Menú del navegador ➔ <b>"Agregar a pantalla de inicio"</b> para usar como App</span>
       </div>
     </div>
   </footer>
 
   <!-- STANDALONE PURE JAVASCRIPT QR ENGINE (Kazuhiko Arase QR Implementation) -->
   <script>
-    // -------------------------------------------------------------
-    // PURE JS QR CODE GENERATOR (Self-contained, Level H support)
-    // -------------------------------------------------------------
     var QRCodeLib = (function() {
       var QRMode = { NUMBER: 1, ALPHA_NUM: 2, 8: 4, KANJI: 8 };
       var QRErrorCorrectLevel = { L: 1, M: 0, Q: 3, H: 2 };
@@ -378,26 +465,11 @@
 
       var QRUtil = {
         PATTERN_POSITION_TABLE: [
-          [],
-          [6, 18],
-          [6, 22],
-          [6, 26],
-          [6, 30],
-          [6, 34],
-          [6, 22, 38],
-          [6, 24, 42],
-          [6, 26, 46],
-          [6, 28, 50],
-          [6, 30, 54],
-          [6, 32, 58],
-          [6, 34, 62],
-          [6, 26, 46, 66],
-          [6, 26, 48, 70],
-          [6, 26, 50, 74],
-          [6, 30, 54, 78],
-          [6, 30, 56, 82],
-          [6, 30, 58, 86],
-          [6, 34, 62, 90]
+          [], [6, 18], [6, 22], [6, 26], [6, 30], [6, 34],
+          [6, 22, 38], [6, 24, 42], [6, 26, 46], [6, 28, 50],
+          [6, 30, 54], [6, 32, 58], [6, 34, 62], [6, 26, 46, 66],
+          [6, 26, 48, 70], [6, 26, 50, 74], [6, 30, 54, 78],
+          [6, 30, 56, 82], [6, 30, 58, 86], [6, 34, 62, 90]
         ],
         G15: (1 << 10) | (1 << 8) | (1 << 5) | (1 << 4) | (1 << 2) | (1 << 1) | (1 << 0),
         G18: (1 << 12) | (1 << 11) | (1 << 10) | (1 << 9) | (1 << 8) | (1 << 5) | (1 << 2) | (1 << 0),
@@ -533,7 +605,6 @@
         this.dataCount = dataCount;
       }
       QRRSBlock.RS_BLOCK_TABLE = [
-        // 1-10
         [1, 26, 19], [1, 26, 16], [1, 26, 13], [1, 26, 9],
         [1, 44, 34], [1, 44, 28], [1, 44, 22], [1, 44, 16],
         [1, 70, 55], [1, 70, 44], [2, 35, 17], [2, 35, 13],
@@ -725,9 +796,7 @@
           }
           this.modules[this.moduleCount - 8][8] = !test;
         },
-        setupTypeNumber: function(test) {
-          // not required for types < 7
-        },
+        setupTypeNumber: function(test) {},
         mapData: function(data, maskPattern) {
           var inc = -1;
           var row = this.moduleCount - 1;
@@ -831,26 +900,61 @@
     })();
 
     // -------------------------------------------------------------
-    // APPLICATION STATE & LOGIC
+    // ADVANCED CANVAS RENDERING & STYLING LOGIC
     // -------------------------------------------------------------
     let currentLogoImage = null;
-    let logoSizePct = 0.22; // 22% of QR width is safe under Error Level H (30%)
+    let logoSizePct = 0.22;
+    let moduleStyle = 'square'; // 'square', 'rounded', 'dots'
+    let isGradient = false;
     let debounceTimer = null;
     let cameraStream = null;
 
-    // Local Storage Key
-    const STORAGE_KEY = "qr_studio_fold_history_v1";
+    const STORAGE_KEY = "qrtr_studio_history_v2";
 
     function debounceUpdateQR() {
       clearTimeout(debounceTimer);
-      debounceTimer = setTimeout(updateQR, 150);
+      debounceTimer = setTimeout(updateQR, 120);
     }
 
-    function setTheme(fg, bg) {
+    function setModuleStyle(style) {
+      moduleStyle = style;
+      ['square', 'rounded', 'dots'].forEach(s => {
+        const btn = document.getElementById('btn-style-' + s);
+        if (s === style) {
+          btn.className = "py-2.5 px-3 rounded-2xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 text-xs font-semibold flex items-center justify-center gap-2 transition";
+        } else {
+          btn.className = "py-2.5 px-3 rounded-2xl bg-slate-950/80 border border-white/10 hover:border-white/20 text-slate-300 text-xs font-semibold flex items-center justify-center gap-2 transition";
+        }
+      });
+      updateQR();
+    }
+
+    function toggleGradientMode(checked) {
+      isGradient = checked;
+      const box = document.getElementById('grad-color-box');
+      if (checked) {
+        box.classList.remove('hidden');
+      } else {
+        box.classList.add('hidden');
+      }
+      updateQR();
+    }
+
+    function applyPalette(fg, bg, fg2) {
       document.getElementById('color-fg').value = fg;
       document.getElementById('color-bg').value = bg;
       document.getElementById('label-fg').innerText = fg.toUpperCase();
       document.getElementById('label-bg').innerText = bg.toUpperCase();
+
+      if (fg2) {
+        document.getElementById('color-fg2').value = fg2;
+        document.getElementById('label-fg2').innerText = fg2.toUpperCase();
+        document.getElementById('check-gradient').checked = true;
+        toggleGradientMode(true);
+      } else {
+        document.getElementById('check-gradient').checked = false;
+        toggleGradientMode(false);
+      }
       updateQR();
     }
 
@@ -858,6 +962,17 @@
       logoSizePct = parseInt(val, 10) / 100;
       document.getElementById('logo-size-val').innerText = val + "%";
       updateQR();
+    }
+
+    function setMemojiLogo() {
+      const img = new Image();
+      img.onload = () => {
+        currentLogoImage = img;
+        document.getElementById('btn-remove-logo').classList.remove('hidden');
+        document.getElementById('logo-adjusters').classList.remove('hidden');
+        updateQR();
+      };
+      img.src = "memoji.png";
     }
 
     function handleLogoUpload(e) {
@@ -876,17 +991,6 @@
         img.src = evt.target.result;
       };
       reader.readAsDataURL(file);
-    }
-
-    function setMemojiLogo() {
-      const img = new Image();
-      img.onload = () => {
-        currentLogoImage = img;
-        document.getElementById('btn-remove-logo').classList.remove('hidden');
-        document.getElementById('logo-adjusters').classList.remove('hidden');
-        updateQR();
-      };
-      img.src = "memoji.png";
     }
 
     function setSampleLogo(type) {
@@ -925,31 +1029,31 @@
       updateQR();
     }
 
-    // MAIN RENDER FUNCTION
+    // MAIN RENDER WITH SHAPES & GRADIENTS
     function updateQR() {
       const url = document.getElementById('input-url').value.trim() || "https://antigravity.google";
       const title = document.getElementById('input-title').value.trim() || url;
       const fgColor = document.getElementById('color-fg').value;
+      const fgColor2 = document.getElementById('color-fg2').value;
       const bgColor = document.getElementById('color-bg').value;
       const badgeStyle = document.getElementById('select-logo-badge').value;
 
       document.getElementById('label-fg').innerText = fgColor.toUpperCase();
+      document.getElementById('label-fg2').innerText = fgColor2.toUpperCase();
       document.getElementById('label-bg').innerText = bgColor.toUpperCase();
 
-      // Update print label info
       document.getElementById('print-title').innerText = title;
       document.getElementById('print-url').innerText = url;
 
       const canvas = document.getElementById('qr-canvas');
       const ctx = canvas.getContext('2d');
 
-      // Create QR with auto version and Level H (High 30% error correction)
       const qr = QRCodeLib.create(0, QRCodeLib.ErrorLevel.H);
       qr.addData(url);
       qr.make();
 
       const moduleCount = qr.getModuleCount();
-      const outputSize = 1024; // High definition output
+      const outputSize = 1024;
       canvas.width = outputSize;
       canvas.height = outputSize;
 
@@ -957,19 +1061,46 @@
       ctx.fillStyle = bgColor;
       ctx.fillRect(0, 0, outputSize, outputSize);
 
-      // Quiet Zone padding (4 modules)
       const quietZone = 4;
       const totalModules = moduleCount + quietZone * 2;
       const modulePixelSize = outputSize / totalModules;
 
+      // Fill style: Solid or Linear Gradient
+      if (isGradient) {
+        const grad = ctx.createLinearGradient(0, 0, outputSize, outputSize);
+        grad.addColorStop(0, fgColor);
+        grad.addColorStop(1, fgColor2);
+        ctx.fillStyle = grad;
+      } else {
+        ctx.fillStyle = fgColor;
+      }
+
+      // Check if position probe area (three big corner boxes)
+      function isFinderPattern(r, c) {
+        return (r < 7 && c < 7) || (r < 7 && c >= moduleCount - 7) || (r >= moduleCount - 7 && c < 7);
+      }
+
       // Draw Modules
-      ctx.fillStyle = fgColor;
       for (let r = 0; r < moduleCount; r++) {
         for (let c = 0; c < moduleCount; c++) {
           if (qr.isDark(r, c)) {
             const x = (c + quietZone) * modulePixelSize;
             const y = (r + quietZone) * modulePixelSize;
-            ctx.fillRect(Math.floor(x), Math.floor(y), Math.ceil(modulePixelSize), Math.ceil(modulePixelSize));
+            const size = Math.ceil(modulePixelSize);
+
+            if (isFinderPattern(r, c) || moduleStyle === 'square') {
+              ctx.fillRect(Math.floor(x), Math.floor(y), size, size);
+            } else if (moduleStyle === 'dots') {
+              ctx.beginPath();
+              const radius = size * 0.46;
+              ctx.arc(x + size / 2, y + size / 2, radius, 0, Math.PI * 2);
+              ctx.fill();
+            } else if (moduleStyle === 'rounded') {
+              ctx.beginPath();
+              const rad = size * 0.35;
+              ctx.roundRect(Math.floor(x), Math.floor(y), size, size, rad);
+              ctx.fill();
+            }
           }
         }
       }
@@ -982,16 +1113,15 @@
         const boxX = centerX - logoPixelSize / 2;
         const boxY = centerY - logoPixelSize / 2;
 
-        // Draw protective badge to separate QR pixels from the logo
         if (badgeStyle !== "none") {
           ctx.save();
           ctx.fillStyle = "#ffffff";
-          ctx.shadowColor = "rgba(0,0,0,0.18)";
-          ctx.shadowBlur = 12;
+          ctx.shadowColor = "rgba(0,0,0,0.22)";
+          ctx.shadowBlur = 16;
           ctx.shadowOffsetX = 0;
-          ctx.shadowOffsetY = 4;
+          ctx.shadowOffsetY = 6;
 
-          const badgeMargin = 12; // Extra breathing room around logo
+          const badgeMargin = 16;
           const badgeSize = logoPixelSize + badgeMargin * 2;
           const badgeX = centerX - badgeSize / 2;
           const badgeY = centerY - badgeSize / 2;
@@ -1001,8 +1131,7 @@
             ctx.arc(centerX, centerY, badgeSize / 2, 0, Math.PI * 2);
             ctx.fill();
           } else {
-            // Rounded square
-            const radius = 18;
+            const radius = 24;
             ctx.beginPath();
             ctx.roundRect(badgeX, badgeY, badgeSize, badgeSize, radius);
             ctx.fill();
@@ -1010,7 +1139,6 @@
           ctx.restore();
         }
 
-        // Draw Logo Image scaled neatly
         ctx.save();
         ctx.drawImage(currentLogoImage, boxX, boxY, logoPixelSize, logoPixelSize);
         ctx.restore();
@@ -1031,7 +1159,7 @@
 
     function downloadPNG() {
       const canvas = document.getElementById('qr-canvas');
-      const title = (document.getElementById('input-title').value.trim() || "qr_code")
+      const title = (document.getElementById('input-title').value.trim() || "qrtr_code")
         .toLowerCase().replace(/[^a-z0-9]/gi, '_');
       
       const link = document.createElement('a');
@@ -1042,21 +1170,19 @@
 
     async function shareQR() {
       const canvas = document.getElementById('qr-canvas');
-      const title = document.getElementById('input-title').value.trim() || "Código QR";
+      const title = document.getElementById('input-title').value.trim() || "QRTR Studio";
       const url = document.getElementById('input-url').value.trim();
 
       if (navigator.share && canvas.toBlob) {
         canvas.toBlob(async (blob) => {
-          const file = new File([blob], "codigo_qr.png", { type: "image/png" });
+          const file = new File([blob], "qrtr_codigo.png", { type: "image/png" });
           try {
             await navigator.share({
               title: title,
-              text: `Código QR para: ${url}`,
+              text: `Código QR generado por QRTR Studio: ${url}`,
               files: [file]
             });
-          } catch (e) {
-            // User cancelled or unsupported
-          }
+          } catch (e) {}
         });
       } else {
         downloadPNG();
@@ -1071,9 +1197,7 @@
       }, 1000);
     }
 
-    // -------------------------------------------------------------
-    // HISTORY & COLLECTIONS MANAGEMENT (LocalStorage)
-    // -------------------------------------------------------------
+    // HISTORY LOGIC
     function getHistory() {
       try {
         return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
@@ -1109,22 +1233,24 @@
         category: category,
         notes: notes,
         fg: document.getElementById('color-fg').value,
+        fg2: document.getElementById('color-fg2').value,
         bg: document.getElementById('color-bg').value,
+        isGradient: isGradient,
+        moduleStyle: moduleStyle,
         thumb: thumb,
         createdAt: new Date().toLocaleDateString('es-ES', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
       };
 
       const list = getHistory();
-      list.unshift(item); // Add to beginning
+      list.unshift(item);
       saveHistory(list);
 
-      // Notification feedback
-      alert(`✓ ¡Guardado exitosamente en tu colección! Puedes verlo en la pestaña "Historial".`);
+      alert(`✓ ¡Guardado exitosamente en tu Colección!`);
       renderHistory();
     }
 
     function deleteHistoryItem(id) {
-      if (!confirm("¿Deseas eliminar este código de tu historial?")) return;
+      if (!confirm("¿Deseas eliminar este código de tu colección?")) return;
       let list = getHistory();
       list = list.filter(item => item.id !== id);
       saveHistory(list);
@@ -1142,6 +1268,12 @@
       document.getElementById('input-notes').value = item.notes || "";
       document.getElementById('color-fg').value = item.fg || "#0f172a";
       document.getElementById('color-bg').value = item.bg || "#ffffff";
+
+      if (item.fg2) document.getElementById('color-fg2').value = item.fg2;
+      document.getElementById('check-gradient').checked = !!item.isGradient;
+      toggleGradientMode(!!item.isGradient);
+
+      if (item.moduleStyle) setModuleStyle(item.moduleStyle);
 
       switchMainTab('create');
       updateQR();
@@ -1168,35 +1300,33 @@
 
       emptyState.classList.add('hidden');
       container.innerHTML = filtered.map(item => `
-        <div class="bg-[var(--card,#131d31)] border border-[var(--border,#1e293b)] hover:border-emerald-500/50 rounded-2xl p-4 shadow-md transition flex flex-col justify-between space-y-3">
-          <div class="flex items-start gap-3">
-            <img src="${item.thumb}" class="w-16 h-16 rounded-xl border border-slate-700 bg-white object-contain flex-shrink-0 cursor-pointer" onclick="loadItemToCreator('${item.id}')" title="Cargar este QR">
+        <div class="backdrop-blur-xl bg-slate-900/60 border border-white/10 hover:border-emerald-500/40 rounded-3xl p-5 shadow-xl transition flex flex-col justify-between space-y-4">
+          <div class="flex items-start gap-3.5">
+            <img src="${item.thumb}" class="w-16 h-16 rounded-2xl border border-white/10 bg-white object-contain flex-shrink-0 cursor-pointer shadow-md" onclick="loadItemToCreator('${item.id}')" title="Cargar este QR">
             <div class="min-w-0 flex-1">
               <div class="flex items-center gap-1.5 mb-1">
-                <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">${item.category || "General"}</span>
-                <span class="text-[10px] text-[var(--muted-foreground,#94a3b8)]">${item.createdAt}</span>
+                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">${item.category || "General"}</span>
+                <span class="text-[10px] text-slate-500 font-mono">${item.createdAt}</span>
               </div>
-              <h4 class="text-sm font-bold text-white truncate cursor-pointer hover:text-emerald-300" onclick="loadItemToCreator('${item.id}')">${item.title}</h4>
-              <p class="text-xs text-[var(--muted-foreground,#94a3b8)] truncate font-mono">${item.url}</p>
+              <h4 class="text-sm font-bold text-white truncate cursor-pointer hover:text-emerald-300 transition" onclick="loadItemToCreator('${item.id}')">${item.title}</h4>
+              <p class="text-xs text-slate-400 truncate font-mono">${item.url}</p>
             </div>
           </div>
-          ${item.notes ? `<p class="text-xs text-slate-400 italic bg-black/30 p-2 rounded-lg line-clamp-2">${item.notes}</p>` : ''}
-          <div class="flex items-center justify-between pt-2 border-t border-[var(--border,#1e293b)] text-xs">
-            <button onclick="loadItemToCreator('${item.id}')" class="text-emerald-400 hover:text-emerald-300 font-semibold flex items-center gap-1">
-              Editar / Abrir ↗
+          ${item.notes ? `<p class="text-xs text-slate-300 italic bg-black/40 p-2.5 rounded-xl border border-white/5 line-clamp-2">${item.notes}</p>` : ''}
+          <div class="flex items-center justify-between pt-3 border-t border-white/[0.06] text-xs">
+            <button onclick="loadItemToCreator('${item.id}')" class="text-emerald-400 hover:text-emerald-300 font-bold flex items-center gap-1 transition">
+              Cargar en editor ↗
             </button>
-            <div class="flex items-center gap-2">
-              <a href="${item.url}" target="_blank" class="text-[var(--muted-foreground,#94a3b8)] hover:text-white" title="Visitar enlace">🔗</a>
-              <button onclick="deleteHistoryItem('${item.id}')" class="text-rose-400 hover:text-rose-300" title="Eliminar">🗑️</button>
+            <div class="flex items-center gap-3">
+              <a href="${item.url}" target="_blank" class="text-slate-400 hover:text-white transition" title="Visitar enlace">🔗</a>
+              <button onclick="deleteHistoryItem('${item.id}')" class="text-rose-400 hover:text-rose-300 transition" title="Eliminar">🗑️</button>
             </div>
           </div>
         </div>
       `).join('');
     }
 
-    // -------------------------------------------------------------
-    // SCANNER & BARCODE DETECTION (Camera + Files)
-    // -------------------------------------------------------------
+    // SCANNER
     async function startCameraScanner() {
       const video = document.getElementById('scan-video');
       const placeholder = document.getElementById('scan-placeholder');
@@ -1211,11 +1341,9 @@
         placeholder.classList.add('hidden');
         btnStop.classList.remove('hidden');
         await video.play();
-
-        // Start frame scan loop
         scanVideoLoop();
       } catch (err) {
-        alert("No se pudo acceder a la cámara. Asegúrate de dar permisos de cámara en tu navegador.");
+        alert("No se pudo acceder a la cámara. Concede permisos de cámara en tu navegador.");
       }
     }
 
@@ -1242,9 +1370,7 @@
             stopCameraScanner();
             return;
           }
-        } catch (e) {
-          // ignore loop error
-        }
+        } catch (e) {}
       }
       requestAnimationFrame(scanVideoLoop);
     }
@@ -1263,13 +1389,13 @@
               handleScanSuccess(barcodes[0].rawValue);
               return;
             } else {
-              alert("No se detectó ningún código QR en la imagen seleccionada.");
+              alert("No se detectó ningún código QR en la imagen.");
             }
           } catch (err) {
-            alert("Tu navegador no soporta el análisis automático de imágenes QR.");
+            alert("No se pudo procesar la imagen.");
           }
         } else {
-          alert("La API de escaneo de imágenes requiere Google Chrome o Samsung Internet.");
+          alert("La función de escaneo requiere Chrome o Samsung Internet.");
         }
       };
       img.src = URL.createObjectURL(file);
@@ -1295,37 +1421,32 @@
       updateQR();
     }
 
-    // -------------------------------------------------------------
-    // NAVIGATION TABS
-    // -------------------------------------------------------------
     function switchMainTab(tab) {
-      // Hide all
       document.getElementById('view-create').classList.add('hidden');
       document.getElementById('view-history').classList.add('hidden');
       document.getElementById('view-scan').classList.add('hidden');
 
-      // Reset buttons
       ['nav-create', 'nav-history', 'nav-scan'].forEach(id => {
         const btn = document.getElementById(id);
-        btn.className = "px-3 py-1.5 rounded-lg font-medium text-[var(--muted-foreground,#94a3b8)] hover:text-white transition";
+        btn.className = "px-3.5 py-1.5 rounded-xl font-medium text-slate-400 hover:text-white transition-all";
       });
 
       if (tab === 'create') {
         document.getElementById('view-create').classList.remove('hidden');
-        document.getElementById('nav-create').className = "px-3 py-1.5 rounded-lg font-medium transition bg-emerald-500 text-black font-semibold shadow-sm";
+        document.getElementById('nav-create').className = "px-3.5 py-1.5 rounded-xl font-semibold transition-all bg-gradient-to-r from-emerald-500 to-teal-400 text-slate-950 shadow-md shadow-emerald-500/20";
       } else if (tab === 'history') {
         document.getElementById('view-history').classList.remove('hidden');
-        document.getElementById('nav-history').className = "px-3 py-1.5 rounded-lg font-medium transition bg-emerald-500 text-black font-semibold shadow-sm";
+        document.getElementById('nav-history').className = "px-3.5 py-1.5 rounded-xl font-semibold transition-all bg-gradient-to-r from-emerald-500 to-teal-400 text-slate-950 shadow-md shadow-emerald-500/20";
         renderHistory();
       } else if (tab === 'scan') {
         document.getElementById('view-scan').classList.remove('hidden');
-        document.getElementById('nav-scan').className = "px-3 py-1.5 rounded-lg font-medium transition bg-emerald-500 text-black font-semibold shadow-sm";
+        document.getElementById('nav-scan').className = "px-3.5 py-1.5 rounded-xl font-semibold transition-all bg-gradient-to-r from-emerald-500 to-teal-400 text-slate-950 shadow-md shadow-emerald-500/20";
       }
     }
 
-    // Initialize on page load
     window.addEventListener('DOMContentLoaded', () => {
-      updateQR();
+      // Initialize with your Memoji as default avatar
+      setMemojiLogo();
       updateHistoryBadge();
     });
   </script>
